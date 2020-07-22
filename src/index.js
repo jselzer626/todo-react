@@ -1,17 +1,101 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import ReactDOM, { render } from 'react-dom';
+import './index.css'
+
+class TodoItems extends React.Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.createTasks = this.createTasks.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
+    }
+    createTasks(item) {
+    
+        return (
+
+            <li key={item.key}>
+            {item.task}
+            <button onClick = {() => this.deleteItem(item.key)}>X</button>
+            </li>
+        )
+    
+    }
+
+    deleteItem(key) {
+        this.props.deleteItem(key);
+    }
+
+    render() {
+        return (
+            <ul>
+                {this.props.entries.map(this.createTasks)}
+            </ul>
+        )
+    }
+
+
+}
+
+
+class TodoList extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            items: []
+        };
+
+        this.addItem = this.addItem.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
+    }
+
+    addItem(e) {
+
+        if (this._inputElement !== '') {
+
+            var newItem = {
+                key: Date.now(),
+                task: this._inputElement.value
+            };
+
+            this.setState((prevState) => {
+                return {
+                    items: prevState.items.concat(newItem)
+                };
+            });
+        }
+        e.preventDefault()
+    }
+
+    deleteItem(key) {
+
+        var filteredItems = this.state.items.filter(item => item.key !== key)
+
+        this.setState({
+            items: filteredItems
+        });
+    }
+
+    render() {
+        return (
+            <div className="mainList">
+                <form onSubmit={this.addItem}>
+                    <input ref={task => {this._inputElement = task}}placeholder="What do you need to do?"></input>
+                    <button type="submit">Add Task</button>
+                </form>
+                <TodoItems
+                    entries={this.state.items}
+                    deleteItem={this.deleteItem}              
+                />
+            </div>
+        );
+    }
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    <div>
+        <TodoList />
+    </div>,
+    document.querySelector("#root")
+)
