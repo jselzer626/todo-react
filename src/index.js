@@ -14,13 +14,15 @@ class TodoItems extends React.Component {
     }
     
     createTasks(item) {
-    
+        
+        var buttonText = this.props.showActiveList ? "Mark Complete" : "Undo"
+
         return (
 
             <li key={item.key} status={item.status}>
             {item.task}
             <button onClick = {() => this.deleteItem(item.key, item.status)}>X</button>
-            <button onClick = {() => this.changeStatus(item.key, item.status)}>Update</button>
+            <button onClick = {() => this.changeStatus(item.key, item.status)}>{buttonText}</button>
             </li>
 
         )
