@@ -9,45 +9,63 @@ class TodoItems extends React.Component {
 
         this.createTasks = this.createTasks.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
+        this.changeStatus = this.changeStatus.bind(this);
+
     }
+    
     createTasks(item) {
     
         return (
 
-            <li key={item.key}>
+            <li key={item.key} status={item.status}>
             {item.task}
-            <button onClick = {() => this.deleteItem(item.key)}>X</button>
+            <button onClick = {() => this.deleteItem(item.key, item.status)}>X</button>
+            <button onClick = {() => this.changeStatus(item.key, item.status)}>Update</button>
             </li>
+
         )
     
     }
 
-    deleteItem(key) {
-        this.props.deleteItem(key);
+    deleteItem(key, status) {
+        //this function is just being passed down by TodoList
+        this.props.deleteItem(key, status);
+    }
+
+    changeStatus(key, status) {
+        this.props.changeStatus(key, status);
     }
 
     render() {
         return (
-            <ul>
-                {this.props.entries.map(this.createTasks)}
-            </ul>
+            <div id="listDisplay">
+                <ul style={{ display: this.props.showActiveList ? "block" : "none"}}>
+                    <h4>Active</h4>
+                    {this.props.active.map(this.createTasks)}
+                </ul>
+                <ul style={{ display: this.props.showActiveList ? "none" : "block"}}>
+                    <h4>Completed</h4>
+                    {this.props.completed.map(this.createTasks)}
+                </ul>
+            </div>
         )
     }
 
-
 }
-
 
 class TodoList extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            items: []
+            active: [],
+            completed: [],
+            showActiveList: true,
         };
 
         this.addItem = this.addItem.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
+        this.changeStatus = this.changeStatus.bind(this);
     }
 
     addItem(e) {
@@ -55,39 +73,69 @@ class TodoList extends React.Component {
         if (this._inputElement !== '') {
 
             var newItem = {
+                status: 'active',
                 key: Date.now(),
                 task: this._inputElement.value
             };
 
             this.setState((prevState) => {
                 return {
-                    items: prevState.items.concat(newItem)
+                    active: prevState.active.concat(newItem),
                 };
             });
         }
         e.preventDefault()
     }
 
-    deleteItem(key) {
+    deleteItem(key, status) {
 
-        var filteredItems = this.state.items.filter(item => item.key !== key)
+        var filteredItems = this.state[`${status}`].filter(item => item.key !== key)
+        console.log(filteredItems)
 
         this.setState({
-            items: filteredItems
+            [status]: filteredItems
+        });
+    }
+    
+    changeStatus(key, status) {
+
+        // find item in old array and send to new array
+        var itemToUpdate = this.state[status].find(item => item.key == key)
+        var newStatus = itemToUpdate.status == "active" ? "completed" : "active"
+
+        // delete item from previous status array & update status
+        var filteredItems = this.state[status].filter(item => item.key !== key)
+        itemToUpdate.status = newStatus
+
+        // update state
+        this.setState((prevState) => {
+            return {
+                [status]: filteredItems,
+                [newStatus]: prevState[newStatus].concat(itemToUpdate)
+            };
         });
     }
 
     render() {
         return (
-            <div className="mainList">
-                <form onSubmit={this.addItem}>
-                    <input ref={task => {this._inputElement = task}}placeholder="What do you need to do?"></input>
-                    <button type="submit">Add Task</button>
-                </form>
-                <TodoItems
-                    entries={this.state.items}
-                    deleteItem={this.deleteItem}              
-                />
+            <div id="container">
+                <div className="mainList">
+                    <form onSubmit={this.addItem}>
+                        <input ref={task => {this._inputElement = task}}placeholder="What do you need to do?"></input>
+                        <button type="submit">Add Task</button>
+                    </form>
+                    <TodoItems
+                            active={this.state.active}
+                            completed={this.state.completed}
+                            showActiveList={this.state.showActiveList}
+                            deleteItem={this.deleteItem}
+                            changeStatus={this.changeStatus}              
+                    />
+                </div>
+                <div id="changeListView">
+                    <button onClick={() => this.setState({showActiveList: true})}>Active</button>
+                    <button onClick={() => this.setState({showActiveList: false})}>Completed</button>
+                </div>
             </div>
         );
     }
