@@ -8,8 +8,10 @@ class TodoItems extends React.Component {
         super(props);
 
         this.createTasks = this.createTasks.bind(this);
-        this.deleteItem = this.deleteItem.bind(this);
-        this.changeStatus = this.changeStatus.bind(this);
+        /*this.deleteItem = this.deleteItem.bind(this);
+        this.changeStatus = this.changeStatus.bind(this);*/
+
+        console.log(this)
 
     }
     
@@ -56,6 +58,7 @@ class TodoItems extends React.Component {
 }
 
 class TodoList extends React.Component {
+
     constructor(props) {
         super(props);
 
@@ -72,7 +75,7 @@ class TodoList extends React.Component {
 
     addItem(e) {
 
-        if (this._inputElement !== '') {
+        if (this._inputElement.value !== '') {
 
             var newItem = {
                 status: 'active',
@@ -91,8 +94,7 @@ class TodoList extends React.Component {
 
     deleteItem(key, status) {
 
-        var filteredItems = this.state[`${status}`].filter(item => item.key !== key)
-        console.log(filteredItems)
+        var filteredItems = this.state[status].filter(item => item.key !== key)
 
         this.setState({
             [status]: filteredItems
@@ -126,7 +128,7 @@ class TodoList extends React.Component {
                         <input ref={task => {this._inputElement = task}}placeholder="What do you need to do?"></input>
                         <button type="submit">Add Task</button>
                     </form>
-                    <TodoItems
+                   <TodoItems
                             active={this.state.active}
                             completed={this.state.completed}
                             showActiveList={this.state.showActiveList}
