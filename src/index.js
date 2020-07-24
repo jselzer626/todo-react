@@ -5,22 +5,53 @@ import './index.css'
 
 // hooks 
 
-function Todo({}) {
+function Todo({ todo, key, deleteItem, markComplete }) {
 
+        return (
 
+            <li>
+                {todo.text}
+                <button onClick = {deleteItem(key)}>Delete</button>
+                <button onClick = {markComplete(key)}>Mark Complete</button>
+            </li>
 
-
+        );
 
 }
 
+function TodoForm({ addItem }) {
 
+    // here are the hooks 
+    const [value, setValue] = useState('')
+
+        const handleSubmit = e => {
+            e.preventDefault()
+            if (!value)
+                return
+            addItem(value)
+            setValue('')
+        }
+
+        return (
+            <form onSubmit={handleSubmit}>
+                <input 
+                    onChange={e => setValue(e.target.value)}
+                    placeholder="what do you want to do"
+                >
+                </input>
+                <button type="submit">Add Taks</button>
+            </form>
+        );
+
+
+}
 
 function App() {
 
     const [todos, setTodos] = useState([])
 
-    const addItem = item => {
-        const newTodos = [...todos, {item}]
+    const addItem = text => {
+        const newTodos = [...todos, {text}]
         setTodos(newTodos)
     }
 
@@ -29,18 +60,34 @@ function App() {
         setTodos(newTodos)
     }
 
-    const markComplete = item => {
+    const markComplete = key => {
         const newTodos = [...todos]
-        newTodos[newTodos.indexOf(item)].status = "complete"
+        newTodos.forEach(item => item.key == key ? item.status = "completed" : '')
         setTodos(newTodos)
     }
 
-
-
-
+    return (
+        //html
+        <div className="app">
+            <div className="mainList">
+                <ul>
+                    {todos.map(todo => {
+                        <Todo
+                        key={Date.now()}
+                        todo={todo}
+                        deleteItem={deleteItem}
+                        markComplete={markComplete}
+                        />
+                    })}
+                </ul>
+            </div>
+            <TodoForm addItem={addItem} />
+        </div>
+    );
 
 }
 
+ReactDOM.render 
 
 /*class TodoItems extends React.Component {
     
