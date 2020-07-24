@@ -1,18 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ReactDOM, { render } from 'react-dom';
 import './index.css'
 
-class TodoItems extends React.Component {
+
+// hooks 
+
+function Todo({}) {
+
+
+
+
+
+}
+
+
+
+function App() {
+
+    const [todos, setTodos] = useState([])
+
+    const addItem = item => {
+        const newTodos = [...todos, {item}]
+        setTodos(newTodos)
+    }
+
+    const deleteItem = key => {
+        const newTodos = todos.filter(item => item.key == key)
+        setTodos(newTodos)
+    }
+
+    const markComplete = item => {
+        const newTodos = [...todos]
+        newTodos[newTodos.indexOf(item)].status = "complete"
+        setTodos(newTodos)
+    }
+
+
+
+
+
+}
+
+
+/*class TodoItems extends React.Component {
     
     constructor(props) {
         super(props);
 
         this.createTasks = this.createTasks.bind(this);
-        /*this.deleteItem = this.deleteItem.bind(this);
-        this.changeStatus = this.changeStatus.bind(this);*/
-
-        console.log(this)
-
     }
     
     createTasks(item) {
@@ -143,11 +178,5 @@ class TodoList extends React.Component {
             </div>
         );
     }
-}
+}*/
 
-ReactDOM.render(
-    <div>
-        <TodoList />
-    </div>,
-    document.querySelector("#root")
-)
